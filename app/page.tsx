@@ -70,6 +70,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* AI請求書作成の紹介 */}
+      <section className="bg-gray-50 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-gradient-to-br from-primary to-blue-900 rounded-2xl p-8 md:p-12 text-white flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1">
+              <span className="inline-block bg-secondary text-white text-xs font-bold px-3 py-1 rounded-full mb-4">
+                軽貨物特化・AI搭載
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                AIでかんたん請求書作成
+              </h2>
+              <p className="text-blue-100 mb-6 leading-relaxed">
+                「1月5日 大阪市内 10件 800円」——配送内容を普段の言葉で入力するだけ。
+                AIが請求明細に自動変換し、消費税も自動計算。そのまま印刷・PDF保存できます。
+              </p>
+              <Link
+                href="/invoices/create"
+                className="inline-block bg-secondary hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-300"
+              >
+                請求書を作成する
+              </Link>
+            </div>
+            <div className="text-7xl md:text-8xl">🧾</div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="bg-secondary text-white py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">

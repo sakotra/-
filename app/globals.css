@@ -40,3 +40,34 @@ html {
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out;
 }
+
+/* 印刷時は請求書プレビューのみを表示 */
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  main {
+    min-height: 0 !important;
+  }
+
+  .invoice-print-area {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* プレビューを1カラム幅いっぱいに */
+  .lg\:sticky {
+    position: static !important;
+  }
+}

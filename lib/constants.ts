@@ -14,6 +14,16 @@ export const COMPANY = {
     saturday: '9:00 - 12:00',
     sunday: '休業',
   },
+  // 適格請求書発行事業者（インボイス）登録番号
+  invoiceRegistrationNo: 'T1234567890123',
+  // 振込先情報
+  bank: {
+    name: '三菱UFJ銀行',
+    branch: '梅田支店',
+    type: '普通',
+    number: '1234567',
+    holder: 'サコントランスポート（カ',
+  },
 }
 
 // ナビゲーション
@@ -21,8 +31,19 @@ export const NAVIGATION = [
   { label: 'ホーム', href: '/' },
   { label: '会社情報', href: '/about' },
   { label: 'サービス', href: '/services' },
+  { label: '請求書作成', href: '/invoices/create' },
   { label: 'お問い合わせ', href: '/contact' },
 ]
+
+// 消費税率
+export const TAX_RATES = [
+  { label: '10%（標準）', value: 0.1 },
+  { label: '8%（軽減）', value: 0.08 },
+  { label: '非課税（0%）', value: 0 },
+]
+
+// よく使う単位
+export const UNITS = ['件', '個', '台', 'ケース', 'kg', 'km', '時間', '日', '式']
 
 // サービス一覧
 export const SERVICES = [
