@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { COMPANY, TAX_RATES, UNITS } from '@/lib/constants'
+import { getCurrentUserId, saveInvoice } from '@/lib/supabase/invoices'
 import {
   InvoiceData,
   LineItem,
@@ -18,6 +20,8 @@ import {
 } from '@/lib/invoice'
 
 const STORAGE_KEY = 'sakon-invoice-draft'
+// 保存済み一覧から「開く」ときの受け渡しキー
+export const OPEN_INVOICE_KEY = 'sakon-open-invoice'
 
 function initialInvoice(): InvoiceData {
   const today = new Date()
@@ -42,9 +46,28 @@ export default function InvoiceEditor() {
   const [aiLoading, setAiLoading] = useState(false)
   const [aiError, setAiError] = useState('')
   const [hydrated, setHydrated] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false)
+  const [cloudSaving, setCloudSaving] = useState(false)
+  const [cloudMsg, setCloudMsg] = useState('')
 
-  // 下書きの復元
+  // 下書き / 保存済みの復元
   useEffect(() => {
+    // 保存済み一覧から「開く」で渡されたデータを優先
+    try {
+      const handoff = sessionStorage.getItem(OPEN_INVOICE_KEY)
+      if (handoff) {
+        sessionStorage.removeItem(OPEN_INVOICE_KEY)
+        const parsed = JSON.parse(handoff) as InvoiceData
+        if (parsed && Array.isArray(parsed.items) && parsed.items.length > 0) {
+          setInvoice(parsed)
+          setHydrated(true)
+          return
+        }
+      }
+    } catch {
+      /* 破損データは無視 */
+    }
+    // 通常はローカル下書きを復元
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
@@ -57,6 +80,11 @@ export default function InvoiceEditor() {
       /* 破損データは無視 */
     }
     setHydrated(true)
+  }, [])
+
+  // ログイン状態の確認
+  useEffect(() => {
+    getCurrentUserId().then((id) => setLoggedIn(Boolean(id)))
   }, [])
 
   // 下書きの自動保存
@@ -104,7 +132,18 @@ export default function InvoiceEditor() {
       setInvoice(initialInvoice())
       setAiText('')
       setAiError('')
+      setCloudMsg('')
     }
+  }
+
+  async function saveToCloud() {
+    setCloudSaving(true)
+    setCloudMsg('')
+    const { error } = await saveInvoice(invoice, totals.total)
+    setCloudMsg(
+      error ? `保存に失敗しました：${error}` : 'クラウドに保存しました。'
+    )
+    setCloudSaving(false)
   }
 
   async function runAi() {
@@ -406,6 +445,31 @@ export default function InvoiceEditor() {
             placeholder="高速代・立替金の精算方法など"
           />
         </section>
+
+        {/* クラウド保存（ログイン時のみ） */}
+        {loggedIn && (
+          <section className="bg-white rounded-xl p-5 shadow border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-primary">クラウド保存</h3>
+              <Link
+                href="/invoices"
+                className="text-sm text-primary hover:underline"
+              >
+                保存済み一覧 →
+              </Link>
+            </div>
+            <button
+              onClick={saveToCloud}
+              disabled={cloudSaving}
+              className="w-full bg-primary hover:bg-blue-900 disabled:opacity-60 text-white font-bold py-2.5 rounded-md transition-colors"
+            >
+              {cloudSaving ? '保存中…' : '☁ この請求書を保存'}
+            </button>
+            {cloudMsg && (
+              <p className="mt-2 text-sm text-gray-600">{cloudMsg}</p>
+            )}
+          </section>
+        )}
 
         <div className="flex gap-3">
           <button

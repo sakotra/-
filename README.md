@@ -82,6 +82,36 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 未設定の場合でも、請求書の手動作成・計算・印刷はそのまま利用できます。
 使用モデル: `claude-opus-5`（構造化出力で明細を厳密に生成）。
 
+## 🔐 ログイン & クラウド保存（Google / Supabase）
+
+Google ログインで利用者を認証し、請求書を**アカウントごとにクラウド保存**できます。
+`NEXT_PUBLIC_SUPABASE_URL` と `NEXT_PUBLIC_SUPABASE_ANON_KEY` を設定すると有効化され、
+`/invoices/*`（請求書作成・一覧）はログイン必須になります。**未設定の場合はログインなしで利用可能**です。
+
+### セットアップ手順
+
+1. **Supabase プロジェクト作成** — [supabase.com](https://supabase.com) で新規プロジェクトを作成。
+2. **DBスキーマの適用** — ダッシュボードの「SQL Editor」で `supabase/schema.sql` を実行（請求書テーブルと行レベルセキュリティを作成）。
+3. **Google ログインの有効化** — [Google Cloud Console](https://console.cloud.google.com) で OAuth クライアントID/シークレットを発行し、Supabase の「Authentication → Providers → Google」に設定。
+   - Google 側の「承認済みのリダイレクト URI」に次を追加：
+     `https://<your-project-ref>.supabase.co/auth/v1/callback`
+   - Supabase の「Authentication → URL Configuration → Site URL / Redirect URLs」に本番URLと `http://localhost:3000` を追加。
+4. **環境変数の設定** — `.env.local.example` を `.env.local` にコピーして値を設定：
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+```
+
+### 認証まわりのファイル構成
+- `middleware.ts` — セッション更新と `/invoices/*` のログイン保護
+- `app/login/` — ログイン画面（Googleボタン）
+- `app/auth/callback/` — OAuth コールバック
+- `app/auth/signout/` — ログアウト
+- `lib/supabase/` — Supabase クライアント（browser/server）と請求書CRUD
+- `app/invoices/` — 保存済み請求書一覧
+- `supabase/schema.sql` — DBスキーマ（RLS付き）
+
 ## 📝 ページ構成
 
 ### ホームページ (/)
