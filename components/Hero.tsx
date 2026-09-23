@@ -11,7 +11,7 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-primary text-white py-20 md:py-32">
       <Image
         src={HERO_IMAGE}
-        alt="2035年の大阪。大阪城上空から梅田の高層ビル群、中之島、大阪湾の夢洲を望む"
+        alt="2035年の大阪。大阪城上空から梅田の高層ビル群、中之島、大阪湾の夢洲を望む。高速道路を車や配送車が走り、空には配送ドローン"
         fill
         priority
         unoptimized={HERO_IMAGE.endsWith('.svg')}
